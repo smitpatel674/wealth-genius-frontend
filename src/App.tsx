@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingContactButtons from './components/FloatingContactButtons';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import About from './pages/About';
 import Courses from './pages/Courses';
@@ -25,6 +26,7 @@ function App() {
   return (
     <HelmetProvider>
       <Router>
+        <ScrollToTop />
         <div className="App">
           <Header />
           <main>
