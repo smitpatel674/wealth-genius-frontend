@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the entire site
+Disallow: /admin/
+Disallow: /api/private/
+Disallow: /*.json$
+
+# Sitemaps
+Sitemap: https://wealthgenius.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Allow important pages for better indexing
+Allow: /
+Allow: /about
+Allow: /courses
+Allow: /blog
+Allow: /blog/*
+Allow: /contact
+Allow: /gallery
+
+# Block unnecessary files
+Disallow: /*.pdf$
+Disallow: /*.doc$
+Disallow: /*.docx$
+Disallow: /private/
+Disallow: /temp/

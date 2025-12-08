@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend-Backend Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        form {
+            display: grid;
+            gap: 10px;
+            max-width: 400px;
+        }
+        input, textarea, select {
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Frontend-Backend Integration Test</h1>
+    <p>This page tests the connection between the React frontend and Node.js backend.</p>
+
+    <!-- Health Check Test -->
+    <div class="test-section">
+        <h2>1. Health Check Test</h2>
+        <p>Test if the backend is running and accessible.</p>
+        <button class="test-button" onclick="testHealthCheck()">Test Health Check</button>
+        <div id="health-result" class="result"></div>
+    </div>
+
+    <!-- Enrollment Test -->
+    <div class="test-section">
+        <h2>2. Enrollment Form Test</h2>
+        <p>Test the enrollment form submission.</p>
+        <form onsubmit="testEnrollment(event)">
+            <input type="text" name="name" placeholder="Full Name" value="Test User" required>
+            <input type="email" name="email" placeholder="Email" value="test@example.com" required>
+            <input type="tel" name="phone" placeholder="Phone" value="+919876543210" required>
+            <input type="text" name="city" placeholder="City" value="Mumbai" required>
+            <select name="course_title" required>
+                <option value="Stock Market Fundamentals">Stock Market Fundamentals</option>
+                <option value="Technical + Derivatives Mastery">Technical + Derivatives Mastery</option>
+                <option value="Stock Market Mastery Program">Stock Market Mastery Program</option>
+            </select>
+            <input type="hidden" name="course_price" value="₹15,000">
+            <button type="submit" class="test-button">Test Enrollment</button>
+        </form>
+        <div id="enrollment-result" class="result"></div>
+    </div>
+
+    <!-- Consultation Test -->
+    <div class="test-section">
+        <h2>3. Consultation Scheduling Test</h2>
+        <p>Test the consultation scheduling form.</p>
+        <form onsubmit="testConsultation(event)">
+            <input type="text" name="name" placeholder="Full Name" value="Test User" required>
+            <input type="email" name="email" placeholder="Email" value="test2@example.com" required>
+            <input type="tel" name="phone" placeholder="Phone" value="+919876543210" required>
+            <input type="date" name="date" required>
+            <select name="time" required>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+            </select>
+            <textarea name="message" placeholder="Message (optional)">I want to learn about trading</textarea>
+            <button type="submit" class="test-button">Test Consultation</button>
+        </form>
+        <div id="consultation-result" class="result"></div>
+    </div>
+
+    <!-- Contact Test -->
+    <div class="test-section">
+        <h2>4. Contact Form Test</h2>
+        <p>Test the contact form submission.</p>
+        <form onsubmit="testContact(event)">
+            <input type="text" name="name" placeholder="Full Name" value="Test User" required>
+            <input type="email" name="email" placeholder="Email" value="test3@example.com" required>
+            <input type="tel" name="phone" placeholder="Phone" value="+919876543210">
+            <input type="text" name="subject" placeholder="Subject" value="General Inquiry" required>
+            <textarea name="message" placeholder="Message" required>I have some questions about your courses</textarea>
+            <button type="submit" class="test-button">Test Contact</button>
+        </form>
+        <div id="contact-result" class="result"></div>
+    </div>
+
+    <script>
+        // Set tomorrow's date for consultation test
+        document.addEventListener('DOMContentLoaded', function() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateInput = document.querySelector('input[name="date"]');
+            dateInput.value = tomorrow.toISOString().split('T')[0];
+        });
+
+        // Helper function to display results
+        function displayResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${success ? 'success' : 'error'}`;
+            element.textContent = success 
+                ? `✅ SUCCESS: ${message}${data ? '\n\nData: ' + JSON.stringify(data, null, 2) : ''}`
+                : `❌ ERROR: ${message}`;
+        }
+
+        // Test health check
+        async function testHealthCheck() {
+            try {
+                const response = await fetch('/api/../health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('health-result', true, 'Backend is healthy!', data);
+                } else {
+                    displayResult('health-result', false, `Health check failed: ${data.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                displayResult('health-result', false, `Network error: ${error.message}`);
+            }
+        }
+
+        // Test enrollment
+        async function testEnrollment(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/v1/enrollments/form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    displayResult('enrollment-result', true, result.message, result.data);
+                } else {
+                    displayResult('enrollment-result', false, result.message || 'Enrollment failed');
+                }
+            } catch (error) {
+                displayResult('enrollment-result', false, `Network error: ${error.message}`);
+            }
+        }
+
+        // Test consultation
+        async function testConsultation(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/v1/consultation/schedule-consultation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    displayResult('consultation-result', true, result.message, result.data);
+                } else {
+                    displayResult('consultation-result', false, result.message || 'Consultation scheduling failed');
+                }
+            } catch (error) {
+                displayResult('consultation-result', false, `Network error: ${error.message}`);
+            }
+        }
+
+        // Test contact
+        async function testContact(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/v1/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    displayResult('contact-result', true, result.message, result.data);
+                } else {
+                    displayResult('contact-result', false, result.message || 'Contact form submission failed');
+                }
+            } catch (error) {
+                displayResult('contact-result', false, `Network error: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
